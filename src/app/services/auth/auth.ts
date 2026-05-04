@@ -19,19 +19,37 @@ export class Auth {
     return this.Http.post(BASIC_URL + 'sign-up', signupRequest);
   }
 
-  login(username: string, password: string): any {
+  login(username: string, password: string) {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
-    const body = { username, password };
-    return this.Http.post(BASIC_URL + 'authenticate', body, { headers, observe: 'response' }).pipe(
+
+    return this.Http.post(
+      BASIC_URL + 'authenticate',
+      { username, password },
+      { headers, observe: 'response' },
+    ).pipe(
       map((response: any) => {
-        const token = response.headers.get('Authorization').substring(7);
-        const user = response.body;
-        if (token && user) {
-          this.userStorageService.saveToken(token);
-          this.userStorageService.saveUser(user);
-          return true;
+        // 🔥 TOKEN FROM HEADER
+        let authHeader = response.headers.get('Authorization');
+
+        if (!authHeader) {
+          throw new Error('No token received');
         }
-        return false;
+
+        // safety cleanup
+        authHeader = authHeader.replace('Bearer ', '').trim();
+
+        this.userStorageService.saveToken(authHeader);
+
+        // 🔥 USER FROM BODY
+        const user = response.body;
+
+        if (!user) {
+          throw new Error('No user received');
+        }
+
+        this.userStorageService.saveUser(user);
+
+        return { token: authHeader, user };
       }),
     );
   }

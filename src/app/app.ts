@@ -3,10 +3,12 @@ import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { DemoAngularMaterialModule } from './DemoAngularMaterialModule';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
 import { UserStorageService } from './services/storage/user-storage';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [
     RouterOutlet,
     RouterModule,
@@ -14,6 +16,7 @@ import { UserStorageService } from './services/storage/user-storage';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    CommonModule
   ],
   templateUrl: './app.html',
   styleUrls: ['./app.scss'],

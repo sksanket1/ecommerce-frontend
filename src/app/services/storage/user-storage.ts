@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
-
 const TOKEN = 'econ-token';
 const USER = 'econ-user';
-
 @Injectable({
   providedIn: 'root',
 })
 export class UserStorageService {
   constructor() {}
-
   public saveToken(token: string): void {
-    localStorage.removeItem(TOKEN);
-    localStorage.setItem(TOKEN, token);
+    localStorage.removeItem('econ-token');
+
+    // 🔥 SAFETY CHECK (VERY IMPORTANT)
+    if (token.includes(',')) {
+      token = token.split(',')[0].trim();
+    }
+
+    localStorage.setItem('econ-token', token);
   }
 
   public saveUser(user: any): void {
@@ -24,7 +27,8 @@ export class UserStorageService {
   }
 
   static getUser(): any {
-    return JSON.parse(localStorage.getItem(USER));
+    const user = localStorage.getItem(USER);
+    return user ? JSON.parse(user) : null;
   }
 
   static getUserId(): string {
